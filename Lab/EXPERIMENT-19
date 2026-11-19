@@ -1,0 +1,32 @@
+import numpy as np
+
+D, P0, n, SIGMA, V = 1000.0, -30.0, 3.5, 4.0, 10.0   
+def run(H, rng, step=0.5):
+    """One crossing from BS1 (x=0) to BS2 (x=D). Returns (handoffs, ping-pongs, position of 1st handoff)."""
+    t_arr = np.arange(0, D / V, step)
+    x_arr = V * t_arr
+    bs = np.array([0.0, D])
+    dist = np.maximum(np.abs(x_arr[:, None] - bs[None, :]), 1)
+    p_all = P0 - 10 * n * np.log10(dist) + rng.normal(0, SIGMA, dist.shape)   # shadowing for both BS
+    serving, handoffs, pingpong, last_t, last_from, first_pos = 0, 0, 0, -99, None, None
+    for t, x, p in zip(t_arr, x_arr, p_all):
+        new = 1 - serving
+        if p[new] > p[serving] + H:                       # handoff rule with hysteresis
+            if last_from == new and t - last_t < 10:      # returned to the previous cell within 10 s
+                pingpong += 1
+            handoffs += 1
+            last_from, last_t, serving = serving, t, new
+            first_pos = first_pos if first_pos is not None else x
+    return handoffs, pingpong, first_pos
+
+rng = np.random.default_rng(1)
+runs = 300
+Hs = (0, 2, 4, 6, 8, 10)
+ho_mean, pp_mean = [], []
+print(f"{'H (dB)':>7} {'handoffs':>9} {'ping-pong':>10} {'1st handoff at (m)':>19}")
+for H in Hs:
+    res = [run(H, rng) for _ in range(runs)]
+    ho = np.mean([r[0] for r in res]); pp = np.mean([r[1] for r in res])
+    pos = np.mean([r[2] for r in res if r[2] is not None])
+    ho_mean.append(ho); pp_mean.append(pp)
+    print(f"{H:7d} {ho:9.2f} {pp:10.2f} {pos:19.0f}")
