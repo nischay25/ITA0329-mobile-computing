@@ -1,0 +1,34 @@
+Program 24 – OMNeT++ (INET): Mobile IP and mobility signalling
+To observe how a mobile node keeps its session when it moves from its home network to a visited 
+network, to verify the Mobile IPv6 signalling in Wireshark and to measure the handover delay
+
+[Config Handover]
+description = "Plain handover: the foreign network is reached through the bidirectional home-agent tunnel (route optimization disabled)"
+sim-time-limit = 70s
+
+Code : 
+# Route optimization is turned off, so this configuration shows handover with plain
+# bidirectional tunneling and nothing else: one correspondent node pings the MN's home
+# address throughout -- reaching it directly while it is home, then through the home-agent
+# tunnel once it has handed over and registered a care-of address. The RouteOptimizationTwoCNs
+# config below is the same scenario with route optimization left on.
+#
+# The destination is hardcoded (the home prefix 2001:db8:0:2::/64 assigned to the home link
+# + the MN's interface id) rather than resolved with "MN[0](ipv6)": the resolver returns the
+# MN's link-local address before SLAAC completes, and its *care-of* address once it has moved
+# away -- never reliably the stable home address that a correspondent node must target.
+*.MN[*].ipv6.mipv6.useRouteOptimization = false
+*.CN[0].numApps = 1
+*.CN[0].app[0].destAddr = "2001:db8:0:2:8aa:ff:fe00:8"
+*.CN[0].app[0].sendInterval = 0.5s
+*.CN[0].app[0].startTime = 1s
+
+# Enable packet capture on Mobile Node
+*.MN[*].numPcapRecorders = 1
+*.MN[*].pcapRecorder[0].pcapFile = "${resultdir}/mn.pcap"
+*.MN[*].pcapRecorder[0].fileFormat = "pcap"
+
+# Enable packet capture on Home Agent
+*.Home_Agent.numPcapRecorders = 1
+*.Home_Agent.pcapRecorder[0].pcapFile = "${resultdir}/ha.pcap"
+*.Home_Agent.pcapRecorder[0].fileFormat = "pcap"
