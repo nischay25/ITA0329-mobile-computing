@@ -1,0 +1,20 @@
+Program 27 – Mobile app that retrieves and displays data from a web API
+To develop a simple Android app that calls a REST web API and displays the returned data 
+in a list.
+
+Code : 
+[General]
+sim-time-limit = 60s
+repeat = 5
+*.numUe = ${n = 5, 10, 20, 40}
+**.ue[*].mobility.typename = "StationaryMobility"
+**.ue[*].mobility.initialX = uniform(100m, 1500m)
+**.ue[*].mobility.initialY = uniform(100m, 600m)
+*.gnb*.cellularNic.mac.schedulingDisciplineDl = ${sched = "PF", "MAXCI", "DRR"}
+*.server.numApps = ${n}
+*.server.app[*].typename = "UdpBasicApp"
+*.server.app[*].destAddress = "ue[" + string(ancestorIndex(0)) + "]"
+*.server.app[*].messageLength = 1000B
+*.server.app[*].sendInterval = 2ms
+*.ue[*].numApps = 1
+*.ue[*].app[0].typename = "UdpSink"
