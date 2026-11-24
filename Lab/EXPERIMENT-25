@@ -1,0 +1,22 @@
+Program 25 – OMNeT++ (INET): ad hoc routing, proactive (DSDV) versus reactive (AODV)
+To compare a proactive routing protocol (DSDV) with a reactive routing protocol (AODV) in a mobile 
+ad hoc network on packet delivery ratio, delay and routing overhead, for different node sp
+
+
+Code : 
+import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
+import inet.node.contract.INetworkNode;
+import inet.node.aodv.AodvRouter;
+import inet.node.dsdv.DsdvRouter;
+import inet.physicallayer.wireless.ieee80211.packetlevel.Ieee80211ScalarRadioMedium;
+network AdhocNet
+{
+    parameters:
+        int numHosts = default(15);
+        string hostType = default("AodvRouter");
+        @display("bgb=600,600");
+    submodules:
+        configurator: Ipv4NetworkConfigurator;
+        radioMedium: Ieee80211ScalarRadioMedium;
+        host[numHosts]: <hostType> like INetworkNode;
+}
