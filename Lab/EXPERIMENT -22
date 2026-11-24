@@ -1,0 +1,47 @@
+Program 22 – Latency trends in a simulated mobile network
+To generate latency samples for a simulated mobile network (including congestion and 
+handover events) and analyse the trend, jitter and percentile delay
+
+[General]
+[Config HandoverSpeed]
+sim-time-limit = ${T=334,100,34}s
+repeat = 5
+constraint = $T == ceil(1000 / $v)
+**.enableHandover = true
+*.gnb1.mobility.initialX = 300m
+*.gnb2.mobility.initialX = 800m
+*.gnb3.mobility.initialX = 1300m
+*.gnb*.mobility.initialY = 300m
+**.ue[0].mobility.typename = "LinearMobility"
+**.ue[0].mobility.initialX = 100m
+**.ue[0].mobility.initialY = 350m
+**.ue[0].mobility.initialMovementHeading = 0deg
+**.ue[0].mobility.speed = ${v=3,10,30}mps
+**.ue[0].cellularNic.phy.handoverDelta = 3dB
+**.ue[0].cellularNic.phy.handoverLatency = 50ms
+*.server.app[0].typename = "UdpBasicApp"
+*.server.app[0].destAddresses = "ue[0]"
+*.server.app[0].messageLength = 500B
+*.server.app[0].sendInterval = 5ms
+*.ue[0].app[0].typename = "UdpSink"
+
+[Config HandoverMargin]
+sim-time-limit = 100s
+repeat = 5
+**.enableHandover = true
+*.gnb1.mobility.initialX = 300m
+*.gnb2.mobility.initialX = 800m
+*.gnb3.mobility.initialX = 1300m
+*.gnb*.mobility.initialY = 300m
+**.ue[0].mobility.typename = "LinearMobility"
+**.ue[0].mobility.initialX = 100m
+**.ue[0].mobility.initialY = 350m
+**.ue[0].mobility.initialMovementHeading = 0deg
+**.ue[0].mobility.speed = 10mps
+**.ue[0].cellularNic.phy.handoverDelta = ${delta=0,3,6}dB
+**.ue[0].cellularNic.phy.handoverLatency = 50ms
+*.server.app[0].typename = "UdpBasicApp"
+*.server.app[0].destAddresses = "ue[0]"
+*.server.app[0].messageLength = 500B
+*.server.app[0].sendInterval = 5ms
+*.ue[0].app[0].typename = "UdpSink"
