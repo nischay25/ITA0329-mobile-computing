@@ -1,0 +1,24 @@
+Program 26 – Test cases for the app’s alert system
+To develop and execute unit test cases for the alert logic of the app (signal, latency and 
+connectivity alerts with duplicate suppression).
+
+
+Code : 
+[General]
+sim-time-limit = 10s
+*.server.numPcapRecorders = 1
+*.server.pcapRecorder[0].pcapFile = "results/server.pcap"
+*.server.pcapRecorder[0].moduleNamePatterns = "eth[*]"
+*.host.numPcapRecorders = 1
+*.host.pcapRecorder[0].pcapFile = "results/host.pcap"
+*.host.pcapRecorder[0].moduleNamePatterns = "wlan[*]"
+*.host.pcapRecorder[0].dumpProtocols = "ieee80211mac"
+*.host.app[0].typename = "UdpSink"
+*.host.app[0].localPort = 5000
+*.server.numApps = 1
+*.server.app[0].typename = "UdpBasicApp"
+*.server.app[0].destAddresses = "host"
+*.server.app[0].destPort = 5000
+*.server.app[0].messageLength = 512B
+*.server.app[0].sendInterval = 20ms
+*.server.app[0].startTime = 1s
